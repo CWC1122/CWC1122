@@ -1,397 +1,705 @@
 ```python
 import os
-import zipfile
 
-local_zip = 'D:/mldownload/rps.zip'
-zip_ref = zipfile.ZipFile(local_zip, 'r')
-zip_ref.extractall('D:/mldownload/')
-zip_ref.close()
+import numpy as np
 
-local_zip = 'D:/mldownload/rps-test-set.zip'
-zip_ref = zipfile.ZipFile(local_zip, 'r')
-zip_ref.extractall('D:/mldownload/')
-zip_ref.close()
+import tensorflow as tf
+assert tf.__version__.startswith('2')
+
+from tflite_model_maker import model_spec
+from tflite_model_maker import image_classifier
+from tflite_model_maker.config import ExportFormat
+from tflite_model_maker.config import QuantizationConfig
+from tflite_model_maker.image_classifier import DataLoader
+
+import matplotlib.pyplot as plt
 
 ```
+
+    2023-06-07 03:20:17.588496: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory
+    2023-06-07 03:20:17.588529: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+    /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/read_weights.py:28: FutureWarning: In the future `np.object` will be defined as the corresponding NumPy scalar.
+      np.uint8, np.uint16, np.object, np.bool]
+    
+
+
+    ---------------------------------------------------------------------------
+
+    AttributeError                            Traceback (most recent call last)
+
+    Cell In[1], line 8
+          5 import tensorflow as tf
+          6 assert tf.__version__.startswith('2')
+    ----> 8 from tflite_model_maker import model_spec
+          9 from tflite_model_maker import image_classifier
+         10 from tflite_model_maker.config import ExportFormat
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_model_maker/__init__.py:44
+          1 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+          2 #
+          3 # Licensed under the Apache License, Version 2.0 (the "License");
+       (...)
+         13 # limitations under the License.
+         14 # pylint: disable=g-bad-import-order,redefined-builtin
+         15 """Public APIs for TFLite Model Maker, a transfer learning library to train custom TFLite models.
+         16 
+         17 You can install the package with
+       (...)
+         41 https://www.tensorflow.org/lite/guide/model_maker.
+         42 """
+    ---> 44 from tflite_model_maker import audio_classifier
+         45 from tflite_model_maker import config
+         46 from tflite_model_maker import image_classifier
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_model_maker/audio_classifier/__init__.py:24
+          1 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+          2 #
+          3 # Licensed under the Apache License, Version 2.0 (the "License");
+       (...)
+         13 # limitations under the License.
+         14 # pylint: disable=g-bad-import-order,redefined-builtin
+         15 """APIs to train an audio classification model.
+         16 
+         17 Tutorial:
+       (...)
+         21 https://github.com/tensorflow/examples/blob/master/tensorflow_examples/lite/model_maker/demo/audio_classification_demo.py
+         22 """
+    ---> 24 from tensorflow_examples.lite.model_maker.core.data_util.audio_dataloader import DataLoader
+         25 from tensorflow_examples.lite.model_maker.core.task.audio_classifier import AudioClassifier
+         26 from tensorflow_examples.lite.model_maker.core.task.audio_classifier import create
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/data_util/audio_dataloader.py:27
+         25 from tensorflow_examples.lite.model_maker.core.api.api_util import mm_export
+         26 from tensorflow_examples.lite.model_maker.core.data_util import dataloader
+    ---> 27 from tensorflow_examples.lite.model_maker.core.task.model_spec import audio_spec
+         29 error_import_librosa = None
+         30 try:
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_spec/__init__.py:20
+         17 import inspect
+         19 from tensorflow_examples.lite.model_maker.core.api import mm_export
+    ---> 20 from tensorflow_examples.lite.model_maker.core.task.model_spec import audio_spec
+         21 from tensorflow_examples.lite.model_maker.core.task.model_spec import image_spec
+         22 from tensorflow_examples.lite.model_maker.core.task.model_spec import object_detector_spec
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_spec/audio_spec.py:30
+         28 import tensorflow as tf
+         29 from tensorflow_examples.lite.model_maker.core.api.api_util import mm_export
+    ---> 30 from tensorflow_examples.lite.model_maker.core.task import model_util
+         31 import tensorflow_hub as hub
+         33 try:
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_util.py:28
+         25 import tensorflow as tf
+         27 from tensorflow_examples.lite.model_maker.core import compat
+    ---> 28 from tensorflowjs.converters import converter as tfjs_converter
+         29 from tflite_support import metadata as _metadata
+         31 DEFAULT_SCALE, DEFAULT_ZERO_POINT = 0, 0
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/__init__.py:21
+         18 from __future__ import print_function
+         20 # pylint: disable=unused-imports
+    ---> 21 from tensorflowjs import converters
+         22 from tensorflowjs import quantization
+         23 from tensorflowjs import version
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/converters/__init__.py:21
+         18 from __future__ import print_function
+         20 # pylint: disable=unused-imports,line-too-long
+    ---> 21 from tensorflowjs.converters.converter import convert
+         22 from tensorflowjs.converters.keras_h5_conversion import save_keras_model
+         23 from tensorflowjs.converters.keras_tfjs_loader import deserialize_keras_model
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/converters/converter.py:35
+         33 from tensorflowjs import version
+         34 from tensorflowjs.converters import common
+    ---> 35 from tensorflowjs.converters import keras_h5_conversion as conversion
+         36 from tensorflowjs.converters import keras_tfjs_loader
+         37 from tensorflowjs.converters import tf_saved_model_conversion_v2
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/converters/keras_h5_conversion.py:33
+         30 import h5py
+         31 import numpy as np
+    ---> 33 from tensorflowjs import write_weights  # pylint: disable=import-error
+         34 from tensorflowjs.converters import common
+         37 def normalize_weight_name(weight_name):
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/write_weights.py:25
+         22 import tensorflow as tf
+         24 from tensorflowjs import quantization
+    ---> 25 from tensorflowjs import read_weights
+         27 _OUTPUT_DTYPES = [np.float16, np.float32, np.int32, np.complex64,
+         28                   np.uint8, np.uint16, np.bool, np.object]
+         29 _AUTO_DTYPE_CONVERSION = {
+         30     np.dtype(np.float16): np.float32,
+         31     np.dtype(np.float64): np.float32,
+         32     np.dtype(np.int64): np.int32,
+         33     np.dtype(np.complex128): np.complex64}
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/read_weights.py:28
+         24 import numpy as np
+         25 from tensorflowjs import quantization
+         27 _INPUT_DTYPES = [np.float16, np.float32, np.int32, np.complex64,
+    ---> 28                  np.uint8, np.uint16, np.object, np.bool]
+         30 # Number of bytes used to encode the length of a string in a string tensor.
+         31 STRING_LENGTH_NUM_BYTES = 4
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/numpy/__init__.py:305, in __getattr__(attr)
+        300     warnings.warn(
+        301         f"In the future `np.{attr}` will be defined as the "
+        302         "corresponding NumPy scalar.", FutureWarning, stacklevel=2)
+        304 if attr in __former_attrs__:
+    --> 305     raise AttributeError(__former_attrs__[attr])
+        307 # Importing Tester requires importing all of UnitTest which is not a
+        308 # cheap import Since it is mainly used in test suits, we lazy import it
+        309 # here to save on the order of 10 ms of import time for most users
+        310 #
+        311 # The previous way Tester was imported also had a side effect of adding
+        312 # the full `numpy.testing` namespace
+        313 if attr == 'testing':
+    
+
+    AttributeError: module 'numpy' has no attribute 'object'.
+    `np.object` was a deprecated alias for the builtin `object`. To avoid this error in existing code, use `object` by itself. Doing this will not modify any behavior and is safe. 
+    The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+        https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+
 
 
 ```python
-rock_dir = os.path.join('D:/mldownload/rps/rock')
-paper_dir = os.path.join('D:/mldownload/rps/paper')
-scissors_dir = os.path.join('D:/mldownload/rps/scissors')
+import os
 
-print('total training rock images:', len(os.listdir(rock_dir)))
-print('total training paper images:', len(os.listdir(paper_dir)))
-print('total training scissors images:', len(os.listdir(scissors_dir)))
+import numpy as np
 
-rock_files = os.listdir(rock_dir)
-print(rock_files[:10])
+import tensorflow as tf
+assert tf.__version__.startswith('2')
 
-paper_files = os.listdir(paper_dir)
-print(paper_files[:10])
+from tflite_model_maker import model_spec
+from tflite_model_maker import image_classifier
+from tflite_model_maker.config import ExportFormat
+from tflite_model_maker.config import QuantizationConfig
+from tflite_model_maker.image_classifier import DataLoader
 
-scissors_files = os.listdir(scissors_dir)
-print(scissors_files[:10])
+import matplotlib.pyplot as plt
+
 ```
 
-    total training rock images: 840
-    total training paper images: 840
-    total training scissors images: 840
-    ['rock01-000.png', 'rock01-001.png', 'rock01-002.png', 'rock01-003.png', 'rock01-004.png', 'rock01-005.png', 'rock01-006.png', 'rock01-007.png', 'rock01-008.png', 'rock01-009.png']
-    ['paper01-000.png', 'paper01-001.png', 'paper01-002.png', 'paper01-003.png', 'paper01-004.png', 'paper01-005.png', 'paper01-006.png', 'paper01-007.png', 'paper01-008.png', 'paper01-009.png']
-    ['scissors01-000.png', 'scissors01-001.png', 'scissors01-002.png', 'scissors01-003.png', 'scissors01-004.png', 'scissors01-005.png', 'scissors01-006.png', 'scissors01-007.png', 'scissors01-008.png', 'scissors01-009.png']
+    2023-06-07 03:26:04.163751: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory
+    2023-06-07 03:26:04.163797: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+    
+
+
+    ---------------------------------------------------------------------------
+
+    ImportError                               Traceback (most recent call last)
+
+    Cell In[1], line 8
+          5 import tensorflow as tf
+          6 assert tf.__version__.startswith('2')
+    ----> 8 from tflite_model_maker import model_spec
+          9 from tflite_model_maker import image_classifier
+         10 from tflite_model_maker.config import ExportFormat
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_model_maker/__init__.py:44
+          1 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+          2 #
+          3 # Licensed under the Apache License, Version 2.0 (the "License");
+       (...)
+         13 # limitations under the License.
+         14 # pylint: disable=g-bad-import-order,redefined-builtin
+         15 """Public APIs for TFLite Model Maker, a transfer learning library to train custom TFLite models.
+         16 
+         17 You can install the package with
+       (...)
+         41 https://www.tensorflow.org/lite/guide/model_maker.
+         42 """
+    ---> 44 from tflite_model_maker import audio_classifier
+         45 from tflite_model_maker import config
+         46 from tflite_model_maker import image_classifier
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_model_maker/audio_classifier/__init__.py:24
+          1 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+          2 #
+          3 # Licensed under the Apache License, Version 2.0 (the "License");
+       (...)
+         13 # limitations under the License.
+         14 # pylint: disable=g-bad-import-order,redefined-builtin
+         15 """APIs to train an audio classification model.
+         16 
+         17 Tutorial:
+       (...)
+         21 https://github.com/tensorflow/examples/blob/master/tensorflow_examples/lite/model_maker/demo/audio_classification_demo.py
+         22 """
+    ---> 24 from tensorflow_examples.lite.model_maker.core.data_util.audio_dataloader import DataLoader
+         25 from tensorflow_examples.lite.model_maker.core.task.audio_classifier import AudioClassifier
+         26 from tensorflow_examples.lite.model_maker.core.task.audio_classifier import create
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/data_util/audio_dataloader.py:27
+         25 from tensorflow_examples.lite.model_maker.core.api.api_util import mm_export
+         26 from tensorflow_examples.lite.model_maker.core.data_util import dataloader
+    ---> 27 from tensorflow_examples.lite.model_maker.core.task.model_spec import audio_spec
+         29 error_import_librosa = None
+         30 try:
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_spec/__init__.py:20
+         17 import inspect
+         19 from tensorflow_examples.lite.model_maker.core.api import mm_export
+    ---> 20 from tensorflow_examples.lite.model_maker.core.task.model_spec import audio_spec
+         21 from tensorflow_examples.lite.model_maker.core.task.model_spec import image_spec
+         22 from tensorflow_examples.lite.model_maker.core.task.model_spec import object_detector_spec
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_spec/audio_spec.py:30
+         28 import tensorflow as tf
+         29 from tensorflow_examples.lite.model_maker.core.api.api_util import mm_export
+    ---> 30 from tensorflow_examples.lite.model_maker.core.task import model_util
+         31 import tensorflow_hub as hub
+         33 try:
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_util.py:29
+         27 from tensorflow_examples.lite.model_maker.core import compat
+         28 from tensorflowjs.converters import converter as tfjs_converter
+    ---> 29 from tflite_support import metadata as _metadata
+         31 DEFAULT_SCALE, DEFAULT_ZERO_POINT = 0, 0
+         32 ESTIMITED_STEPS_PER_EPOCH = 1000
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_support/__init__.py:48
+         46 from tensorflow_lite_support.metadata import metadata_schema_py_generated
+         47 from tensorflow_lite_support.metadata import schema_py_generated
+    ---> 48 from tensorflow_lite_support.metadata.python import metadata
+         49 from tflite_support import metadata_writers
+         51 if platform.system() != 'Windows':
+         52   # Task Library is not supported on Windows yet.
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_lite_support/metadata/python/metadata.py:30
+         28 from tensorflow_lite_support.metadata import metadata_schema_py_generated as _metadata_fb
+         29 from tensorflow_lite_support.metadata import schema_py_generated as _schema_fb
+    ---> 30 from tensorflow_lite_support.metadata.cc.python import _pywrap_metadata_version
+         31 from tensorflow_lite_support.metadata.flatbuffers_lib import _pywrap_flatbuffers
+         33 try:
+         34   # If exists, optionally use TensorFlow to open and check files. Used to
+         35   # support more than local file systems.
+         36   # In pip requirements, we doesn't necessarily need tensorflow as a dep.
+    
+
+    ImportError: libusb-1.0.so.0: cannot open shared object file: No such file or directory
+
+
+
+```python
+sudo apt update && sudo apt install libusb-1.0-0
+```
+
+
+      Cell In[2], line 1
+        sudo apt update && sudo apt install libusb-1.0-0
+             ^
+    SyntaxError: invalid syntax
+    
+
+
+
+```python
+pip install numpy==1.23
+```
+
+    Collecting numpy==1.23
+      Downloading numpy-1.23.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (17.1 MB)
+    [2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m17.1/17.1 MB[0m [31m55.2 MB/s[0m eta [36m0:00:00[0m00:01[0m00:01[0m
+    [?25hInstalling collected packages: numpy
+      Attempting uninstall: numpy
+        Found existing installation: numpy 1.24.3
+        Uninstalling numpy-1.24.3:
+          Successfully uninstalled numpy-1.24.3
+    Successfully installed numpy-1.23.0
+    Note: you may need to restart the kernel to use updated packages.
     
 
 
 ```python
-%matplotlib inline
+import os
+
+import numpy as np
+
+import tensorflow as tf
+assert tf.__version__.startswith('2')
+
+from tflite_model_maker import model_spec
+from tflite_model_maker import image_classifier
+from tflite_model_maker.config import ExportFormat
+from tflite_model_maker.config import QuantizationConfig
+from tflite_model_maker.image_classifier import DataLoader
 
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 
-pic_index = 2
+```
 
-next_rock = [os.path.join(rock_dir, fname) 
-                for fname in rock_files[pic_index-2:pic_index]]
-next_paper = [os.path.join(paper_dir, fname) 
-                for fname in paper_files[pic_index-2:pic_index]]
-next_scissors = [os.path.join(scissors_dir, fname) 
-                for fname in scissors_files[pic_index-2:pic_index]]
+    /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/read_weights.py:28: FutureWarning: In the future `np.object` will be defined as the corresponding NumPy scalar.
+      np.uint8, np.uint16, np.object, np.bool]
+    
 
-for i, img_path in enumerate(next_rock+next_paper+next_scissors):
-  #print(img_path)
-  img = mpimg.imread(img_path)
-  plt.imshow(img)
-  plt.axis('Off')
-  plt.show()
+
+    ---------------------------------------------------------------------------
+
+    AttributeError                            Traceback (most recent call last)
+
+    Cell In[3], line 8
+          5 import tensorflow as tf
+          6 assert tf.__version__.startswith('2')
+    ----> 8 from tflite_model_maker import model_spec
+          9 from tflite_model_maker import image_classifier
+         10 from tflite_model_maker.config import ExportFormat
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_model_maker/__init__.py:44
+          1 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+          2 #
+          3 # Licensed under the Apache License, Version 2.0 (the "License");
+       (...)
+         13 # limitations under the License.
+         14 # pylint: disable=g-bad-import-order,redefined-builtin
+         15 """Public APIs for TFLite Model Maker, a transfer learning library to train custom TFLite models.
+         16 
+         17 You can install the package with
+       (...)
+         41 https://www.tensorflow.org/lite/guide/model_maker.
+         42 """
+    ---> 44 from tflite_model_maker import audio_classifier
+         45 from tflite_model_maker import config
+         46 from tflite_model_maker import image_classifier
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tflite_model_maker/audio_classifier/__init__.py:24
+          1 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+          2 #
+          3 # Licensed under the Apache License, Version 2.0 (the "License");
+       (...)
+         13 # limitations under the License.
+         14 # pylint: disable=g-bad-import-order,redefined-builtin
+         15 """APIs to train an audio classification model.
+         16 
+         17 Tutorial:
+       (...)
+         21 https://github.com/tensorflow/examples/blob/master/tensorflow_examples/lite/model_maker/demo/audio_classification_demo.py
+         22 """
+    ---> 24 from tensorflow_examples.lite.model_maker.core.data_util.audio_dataloader import DataLoader
+         25 from tensorflow_examples.lite.model_maker.core.task.audio_classifier import AudioClassifier
+         26 from tensorflow_examples.lite.model_maker.core.task.audio_classifier import create
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/data_util/audio_dataloader.py:27
+         25 from tensorflow_examples.lite.model_maker.core.api.api_util import mm_export
+         26 from tensorflow_examples.lite.model_maker.core.data_util import dataloader
+    ---> 27 from tensorflow_examples.lite.model_maker.core.task.model_spec import audio_spec
+         29 error_import_librosa = None
+         30 try:
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_spec/__init__.py:20
+         17 import inspect
+         19 from tensorflow_examples.lite.model_maker.core.api import mm_export
+    ---> 20 from tensorflow_examples.lite.model_maker.core.task.model_spec import audio_spec
+         21 from tensorflow_examples.lite.model_maker.core.task.model_spec import image_spec
+         22 from tensorflow_examples.lite.model_maker.core.task.model_spec import object_detector_spec
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_spec/audio_spec.py:30
+         28 import tensorflow as tf
+         29 from tensorflow_examples.lite.model_maker.core.api.api_util import mm_export
+    ---> 30 from tensorflow_examples.lite.model_maker.core.task import model_util
+         31 import tensorflow_hub as hub
+         33 try:
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_examples/lite/model_maker/core/task/model_util.py:28
+         25 import tensorflow as tf
+         27 from tensorflow_examples.lite.model_maker.core import compat
+    ---> 28 from tensorflowjs.converters import converter as tfjs_converter
+         29 from tflite_support import metadata as _metadata
+         31 DEFAULT_SCALE, DEFAULT_ZERO_POINT = 0, 0
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/__init__.py:21
+         18 from __future__ import print_function
+         20 # pylint: disable=unused-imports
+    ---> 21 from tensorflowjs import converters
+         22 from tensorflowjs import quantization
+         23 from tensorflowjs import version
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/converters/__init__.py:21
+         18 from __future__ import print_function
+         20 # pylint: disable=unused-imports,line-too-long
+    ---> 21 from tensorflowjs.converters.converter import convert
+         22 from tensorflowjs.converters.keras_h5_conversion import save_keras_model
+         23 from tensorflowjs.converters.keras_tfjs_loader import deserialize_keras_model
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/converters/converter.py:35
+         33 from tensorflowjs import version
+         34 from tensorflowjs.converters import common
+    ---> 35 from tensorflowjs.converters import keras_h5_conversion as conversion
+         36 from tensorflowjs.converters import keras_tfjs_loader
+         37 from tensorflowjs.converters import tf_saved_model_conversion_v2
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/converters/keras_h5_conversion.py:33
+         30 import h5py
+         31 import numpy as np
+    ---> 33 from tensorflowjs import write_weights  # pylint: disable=import-error
+         34 from tensorflowjs.converters import common
+         37 def normalize_weight_name(weight_name):
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/write_weights.py:25
+         22 import tensorflow as tf
+         24 from tensorflowjs import quantization
+    ---> 25 from tensorflowjs import read_weights
+         27 _OUTPUT_DTYPES = [np.float16, np.float32, np.int32, np.complex64,
+         28                   np.uint8, np.uint16, np.bool, np.object]
+         29 _AUTO_DTYPE_CONVERSION = {
+         30     np.dtype(np.float16): np.float32,
+         31     np.dtype(np.float64): np.float32,
+         32     np.dtype(np.int64): np.int32,
+         33     np.dtype(np.complex128): np.complex64}
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflowjs/read_weights.py:28
+         24 import numpy as np
+         25 from tensorflowjs import quantization
+         27 _INPUT_DTYPES = [np.float16, np.float32, np.int32, np.complex64,
+    ---> 28                  np.uint8, np.uint16, np.object, np.bool]
+         30 # Number of bytes used to encode the length of a string in a string tensor.
+         31 STRING_LENGTH_NUM_BYTES = 4
+    
+
+    File /opt/conda/envs/tf/lib/python3.8/site-packages/numpy/__init__.py:305, in __getattr__(attr)
+        300     warnings.warn(
+        301         f"In the future `np.{attr}` will be defined as the "
+        302         "corresponding NumPy scalar.", FutureWarning, stacklevel=2)
+        304 if attr in __former_attrs__:
+    --> 305     raise AttributeError(__former_attrs__[attr])
+        307 # Importing Tester requires importing all of UnitTest which is not a
+        308 # cheap import Since it is mainly used in test suits, we lazy import it
+        309 # here to save on the order of 10 ms of import time for most users
+        310 #
+        311 # The previous way Tester was imported also had a side effect of adding
+        312 # the full `numpy.testing` namespace
+        313 if attr == 'testing':
+    
+
+    AttributeError: module 'numpy' has no attribute 'object'.
+    `np.object` was a deprecated alias for the builtin `object`. To avoid this error in existing code, use `object` by itself. Doing this will not modify any behavior and is safe. 
+    The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
+        https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+
+
+
+```python
+import os
+
+import numpy as np
+
+import tensorflow as tf
+assert tf.__version__.startswith('2')
+
+from tflite_model_maker import model_spec
+from tflite_model_maker import image_classifier
+from tflite_model_maker.config import ExportFormat
+from tflite_model_maker.config import QuantizationConfig
+from tflite_model_maker.image_classifier import DataLoader
+
+import matplotlib.pyplot as plt
+
+```
+
+    2023-06-07 03:31:27.997528: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory
+    2023-06-07 03:31:27.997582: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+    /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_addons/utils/tfa_eol_msg.py:23: UserWarning: 
+    
+    TensorFlow Addons (TFA) has ended development and introduction of new features.
+    TFA has entered a minimal maintenance and release mode until a planned end of life in May 2024.
+    Please modify downstream libraries to take dependencies from other repositories in our TensorFlow community (e.g. Keras, Keras-CV, and Keras-NLP). 
+    
+    For more information see: https://github.com/tensorflow/addons/issues/2807 
+    
+      warnings.warn(
+    /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow_addons/utils/ensure_tf_install.py:53: UserWarning: Tensorflow Addons supports using Python ops for all Tensorflow versions above or equal to 2.10.0 and strictly below 2.13.0 (nightly versions are not supported). 
+     The versions of TensorFlow you are currently using is 2.8.4 and is not supported. 
+    Some things might work, some things might not.
+    If you were to encounter a bug, do not file an issue.
+    If you want to make sure you're using a tested and supported configuration, either change the TensorFlow version or the TensorFlow Addons's version. 
+    You can find the compatibility matrix in TensorFlow Addon's readme:
+    https://github.com/tensorflow/addons
+      warnings.warn(
+    /opt/conda/envs/tf/lib/python3.8/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+      from .autonotebook import tqdm as notebook_tqdm
+    
+
+
+```python
+image_path = tf.keras.utils.get_file(
+      'flower_photos.tgz',
+      'https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz',
+      extract=True)
+image_path = os.path.join(os.path.dirname(image_path), 'flower_photos')
+
+```
+
+    Downloading data from https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
+    228818944/228813984 [==============================] - 9s 0us/step
+    228827136/228813984 [==============================] - 9s 0us/step
+    
+
+
+```python
+data = DataLoader.from_folder(image_path)
+train_data, test_data = data.split(0.9)
+
+```
+
+    2023-06-07 03:32:22.379924: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /opt/conda/envs/tf/lib/python3.8/site-packages/cv2/../../lib64:
+    2023-06-07 03:32:22.379973: W tensorflow/stream_executor/cuda/cuda_driver.cc:269] failed call to cuInit: UNKNOWN ERROR (303)
+    2023-06-07 03:32:22.379999: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (codespaces-a1a9dc): /proc/driver/nvidia/version does not exist
+    2023-06-07 03:32:22.392295: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
+    To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+    
+
+    INFO:tensorflow:Load image with size: 3670, num_label: 5, labels: daisy, dandelion, roses, sunflowers, tulips.
+    
+
+
+```python
+loss, accuracy = model.evaluate(test_data)
 
 ```
 
 
     ---------------------------------------------------------------------------
 
-    ModuleNotFoundError                       Traceback (most recent call last)
+    NameError                                 Traceback (most recent call last)
 
-    Cell In[3], line 1
-    ----> 1 get_ipython().run_line_magic('matplotlib', 'inline')
-          3 import matplotlib.pyplot as plt
-          4 import matplotlib.image as mpimg
+    Cell In[4], line 1
+    ----> 1 loss, accuracy = model.evaluate(test_data)
     
 
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\IPython\core\interactiveshell.py:2414, in InteractiveShell.run_line_magic(self, magic_name, line, _stack_depth)
-       2412     kwargs['local_ns'] = self.get_local_scope(stack_depth)
-       2413 with self.builtin_trap:
-    -> 2414     result = fn(*args, **kwargs)
-       2416 # The code below prevents the output from being displayed
-       2417 # when using magics with decodator @output_can_be_silenced
-       2418 # when the last Python token in the expression is a ';'.
-       2419 if getattr(fn, magic.MAGIC_OUTPUT_CAN_BE_SILENCED, False):
-    
-
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\IPython\core\magics\pylab.py:99, in PylabMagics.matplotlib(self, line)
-         97     print("Available matplotlib backends: %s" % backends_list)
-         98 else:
-    ---> 99     gui, backend = self.shell.enable_matplotlib(args.gui.lower() if isinstance(args.gui, str) else args.gui)
-        100     self._show_matplotlib_backend(args.gui, backend)
-    
-
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\IPython\core\interactiveshell.py:3585, in InteractiveShell.enable_matplotlib(self, gui)
-       3564 def enable_matplotlib(self, gui=None):
-       3565     """Enable interactive matplotlib and inline figure support.
-       3566 
-       3567     This takes the following steps:
-       (...)
-       3583         display figures inline.
-       3584     """
-    -> 3585     from matplotlib_inline.backend_inline import configure_inline_support
-       3587     from IPython.core import pylabtools as pt
-       3588     gui, backend = pt.find_gui_and_backend(gui, self.pylab_gui_select)
-    
-
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\matplotlib_inline\__init__.py:1
-    ----> 1 from . import backend_inline, config  # noqa
-          2 __version__ = "0.1.6"
-    
-
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\matplotlib_inline\backend_inline.py:6
-          1 """A matplotlib backend for publishing figures via display_data"""
-          3 # Copyright (c) IPython Development Team.
-          4 # Distributed under the terms of the BSD 3-Clause License.
-    ----> 6 import matplotlib
-          7 from matplotlib import colors
-          8 from matplotlib.backends import backend_agg
-    
-
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\matplotlib\__init__.py:107
-        103 import warnings
-        105 # cbook must import matplotlib only within function
-        106 # definitions, so it is safe to import from it here.
-    --> 107 from . import _api, cbook, docstring, rcsetup
-        108 from matplotlib.cbook import MatplotlibDeprecationWarning, sanitize_sequence
-        109 from matplotlib.cbook import mplDeprecation  # deprecated
-    
-
-    File D:\CodeProgram\anaconda3\envs\py39\lib\site-packages\matplotlib\cbook\__init__.py:28
-         25 import warnings
-         26 import weakref
-    ---> 28 import numpy as np
-         30 import matplotlib
-         31 from matplotlib import _api, _c_internal_utils
-    
-
-    ModuleNotFoundError: No module named 'numpy'
+    NameError: name 'model' is not defined
 
 
 
 ```python
-%matplotlib inline
-
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-
-pic_index = 2
-
-next_rock = [os.path.join(rock_dir, fname) 
-                for fname in rock_files[pic_index-2:pic_index]]
-next_paper = [os.path.join(paper_dir, fname) 
-                for fname in paper_files[pic_index-2:pic_index]]
-next_scissors = [os.path.join(scissors_dir, fname) 
-                for fname in scissors_files[pic_index-2:pic_index]]
-
-for i, img_path in enumerate(next_rock+next_paper+next_scissors):
-  #print(img_path)
-  img = mpimg.imread(img_path)
-  plt.imshow(img)
-  plt.axis('Off')
-  plt.show()
+model = image_classifier.create(train_data)
 
 ```
 
-
-    
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_0.png)
-    
-
-
-
-    
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_1.png)
-    
-
-
-
-    
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_2.png)
-    
-
-
-
-    
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_3.png)
-    
-
-
-
-    
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_4.png)
-    
-
-
-
-    
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_5.png)
-    
-
-
-
-```python
-import tensorflow as tf
-import keras_preprocessing
-from keras_preprocessing import image
-from keras_preprocessing.image import ImageDataGenerator
-
-TRAINING_DIR = "D:/mldownload/rps/"
-training_datagen = ImageDataGenerator(
-      rescale = 1./255,
-	    rotation_range=40,
-      width_shift_range=0.2,
-      height_shift_range=0.2,
-      shear_range=0.2,
-      zoom_range=0.2,
-      horizontal_flip=True,
-      fill_mode='nearest')
-
-VALIDATION_DIR = "D:/mldownload/rps-test-set/"
-validation_datagen = ImageDataGenerator(rescale = 1./255)
-
-train_generator = training_datagen.flow_from_directory(
-	TRAINING_DIR,
-	target_size=(150,150),
-	class_mode='categorical',
-  batch_size=126
-)
-
-validation_generator = validation_datagen.flow_from_directory(
-	VALIDATION_DIR,
-	target_size=(150,150),
-	class_mode='categorical',
-  batch_size=126
-)
-
-model = tf.keras.models.Sequential([
-    # Note the input shape is the desired size of the image 150x150 with 3 bytes color
-    # This is the first convolution
-    tf.keras.layers.Conv2D(64, (3,3), activation='relu', input_shape=(150, 150, 3)),
-    tf.keras.layers.MaxPooling2D(2, 2),
-    # The second convolution
-    tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
-    # The third convolution
-    tf.keras.layers.Conv2D(128, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
-    # The fourth convolution
-    tf.keras.layers.Conv2D(128, (3,3), activation='relu'),
-    tf.keras.layers.MaxPooling2D(2,2),
-    # Flatten the results to feed into a DNN
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dropout(0.5),
-    # 512 neuron hidden layer
-    tf.keras.layers.Dense(512, activation='relu'),
-    tf.keras.layers.Dense(3, activation='softmax')
-])
-
-
-model.summary()
-
-model.compile(loss = 'categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-
-history = model.fit(train_generator, epochs=25, steps_per_epoch=20, validation_data = validation_generator, verbose = 1, validation_steps=3)
-
-model.save("rps.h5")
-
-```
-
-    Found 2520 images belonging to 3 classes.
-    Found 372 images belonging to 3 classes.
+    INFO:tensorflow:Retraining the models...
     Model: "sequential"
     _________________________________________________________________
      Layer (type)                Output Shape              Param #   
     =================================================================
-     conv2d (Conv2D)             (None, 148, 148, 64)      1792      
+     hub_keras_layer_v1v2 (HubKe  (None, 1280)             3413024   
+     rasLayerV1V2)                                                   
                                                                      
-     max_pooling2d (MaxPooling2D  (None, 74, 74, 64)       0         
-     )                                                               
+     dropout (Dropout)           (None, 1280)              0         
                                                                      
-     conv2d_1 (Conv2D)           (None, 72, 72, 64)        36928     
-                                                                     
-     max_pooling2d_1 (MaxPooling  (None, 36, 36, 64)       0         
-     2D)                                                             
-                                                                     
-     conv2d_2 (Conv2D)           (None, 34, 34, 128)       73856     
-                                                                     
-     max_pooling2d_2 (MaxPooling  (None, 17, 17, 128)      0         
-     2D)                                                             
-                                                                     
-     conv2d_3 (Conv2D)           (None, 15, 15, 128)       147584    
-                                                                     
-     max_pooling2d_3 (MaxPooling  (None, 7, 7, 128)        0         
-     2D)                                                             
-                                                                     
-     flatten (Flatten)           (None, 6272)              0         
-                                                                     
-     dropout (Dropout)           (None, 6272)              0         
-                                                                     
-     dense (Dense)               (None, 512)               3211776   
-                                                                     
-     dense_1 (Dense)             (None, 3)                 1539      
+     dense (Dense)               (None, 5)                 6405      
                                                                      
     =================================================================
-    Total params: 3,473,475
-    Trainable params: 3,473,475
-    Non-trainable params: 0
+    Total params: 3,419,429
+    Trainable params: 6,405
+    Non-trainable params: 3,413,024
     _________________________________________________________________
-    Epoch 1/25
-    20/20 [==============================] - 56s 3s/step - loss: 1.2618 - accuracy: 0.3405 - val_loss: 1.0815 - val_accuracy: 0.4220
-    Epoch 2/25
-    20/20 [==============================] - 57s 3s/step - loss: 1.1051 - accuracy: 0.3952 - val_loss: 0.9877 - val_accuracy: 0.6452
-    Epoch 3/25
-    20/20 [==============================] - 56s 3s/step - loss: 1.0750 - accuracy: 0.4373 - val_loss: 1.0098 - val_accuracy: 0.5914
-    Epoch 4/25
-    20/20 [==============================] - 56s 3s/step - loss: 0.9367 - accuracy: 0.5710 - val_loss: 0.7837 - val_accuracy: 0.6156
-    Epoch 5/25
-    20/20 [==============================] - 57s 3s/step - loss: 0.7757 - accuracy: 0.6488 - val_loss: 0.3819 - val_accuracy: 0.7849
-    Epoch 6/25
-    20/20 [==============================] - 57s 3s/step - loss: 0.6535 - accuracy: 0.6885 - val_loss: 0.3575 - val_accuracy: 0.7527
-    Epoch 7/25
-    20/20 [==============================] - 60s 3s/step - loss: 0.5798 - accuracy: 0.7413 - val_loss: 0.2090 - val_accuracy: 0.9328
-    Epoch 8/25
-    20/20 [==============================] - 57s 3s/step - loss: 0.5267 - accuracy: 0.7944 - val_loss: 0.0954 - val_accuracy: 1.0000
-    Epoch 9/25
-    20/20 [==============================] - 62s 3s/step - loss: 0.4673 - accuracy: 0.8056 - val_loss: 0.4752 - val_accuracy: 0.7231
-    Epoch 10/25
-    20/20 [==============================] - 63s 3s/step - loss: 0.3117 - accuracy: 0.8762 - val_loss: 0.3949 - val_accuracy: 0.7957
-    Epoch 11/25
-    20/20 [==============================] - 59s 3s/step - loss: 0.3772 - accuracy: 0.8631 - val_loss: 0.1779 - val_accuracy: 0.9113
-    Epoch 12/25
-    20/20 [==============================] - 56s 3s/step - loss: 0.2415 - accuracy: 0.9008 - val_loss: 0.0361 - val_accuracy: 0.9973
-    Epoch 13/25
-    20/20 [==============================] - 56s 3s/step - loss: 0.2220 - accuracy: 0.9139 - val_loss: 0.0258 - val_accuracy: 1.0000
-    Epoch 14/25
-    20/20 [==============================] - 57s 3s/step - loss: 0.1870 - accuracy: 0.9369 - val_loss: 0.0163 - val_accuracy: 1.0000
-    Epoch 15/25
-    20/20 [==============================] - 61s 3s/step - loss: 0.1801 - accuracy: 0.9317 - val_loss: 0.0407 - val_accuracy: 0.9892
-    Epoch 16/25
-    20/20 [==============================] - 69s 3s/step - loss: 0.1709 - accuracy: 0.9369 - val_loss: 0.0628 - val_accuracy: 0.9785
-    Epoch 17/25
-    20/20 [==============================] - 61s 3s/step - loss: 0.2174 - accuracy: 0.9274 - val_loss: 0.0537 - val_accuracy: 0.9731
-    Epoch 18/25
-    20/20 [==============================] - 59s 3s/step - loss: 0.0979 - accuracy: 0.9714 - val_loss: 0.0119 - val_accuracy: 1.0000
-    Epoch 19/25
-    20/20 [==============================] - 58s 3s/step - loss: 0.1509 - accuracy: 0.9397 - val_loss: 0.0277 - val_accuracy: 0.9866
-    Epoch 20/25
-    20/20 [==============================] - 59s 3s/step - loss: 0.1361 - accuracy: 0.9476 - val_loss: 0.4111 - val_accuracy: 0.7876
-    Epoch 21/25
-    20/20 [==============================] - 59s 3s/step - loss: 0.0875 - accuracy: 0.9675 - val_loss: 0.0160 - val_accuracy: 1.0000
-    Epoch 22/25
-    20/20 [==============================] - 58s 3s/step - loss: 0.0968 - accuracy: 0.9694 - val_loss: 0.0260 - val_accuracy: 0.9946
-    Epoch 23/25
-    20/20 [==============================] - 59s 3s/step - loss: 0.1362 - accuracy: 0.9492 - val_loss: 0.0687 - val_accuracy: 0.9570
-    Epoch 24/25
-    20/20 [==============================] - 59s 3s/step - loss: 0.0495 - accuracy: 0.9833 - val_loss: 0.0097 - val_accuracy: 1.0000
-    Epoch 25/25
-    20/20 [==============================] - 56s 3s/step - loss: 0.1557 - accuracy: 0.9488 - val_loss: 0.0787 - val_accuracy: 0.9731
+    None
+    Epoch 1/5
+    
+
+    2023-06-07 03:33:10.012193: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 51380224 exceeds 10% of free system memory.
+    2023-06-07 03:33:10.360993: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 51380224 exceeds 10% of free system memory.
+    2023-06-07 03:33:10.399226: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 51380224 exceeds 10% of free system memory.
+    2023-06-07 03:33:10.434534: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 25690112 exceeds 10% of free system memory.
+    2023-06-07 03:33:10.447244: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 154140672 exceeds 10% of free system memory.
+    
+
+    103/103 [==============================] - 61s 566ms/step - loss: 0.8642 - accuracy: 0.7737
+    Epoch 2/5
+    103/103 [==============================] - 56s 538ms/step - loss: 0.6493 - accuracy: 0.8944
+    Epoch 3/5
+    103/103 [==============================] - 55s 532ms/step - loss: 0.6166 - accuracy: 0.9202
+    Epoch 4/5
+    103/103 [==============================] - 54s 518ms/step - loss: 0.5940 - accuracy: 0.9360
+    Epoch 5/5
+    103/103 [==============================] - 54s 518ms/step - loss: 0.5853 - accuracy: 0.9345
     
 
 
 ```python
-import matplotlib.pyplot as plt
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-epochs = range(len(acc))
-
-plt.plot(epochs, acc, 'r', label='Training accuracy')
-plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
-plt.title('Training and validation accuracy')
-plt.legend(loc=0)
-plt.figure()
-plt.show()
+loss, accuracy = model.evaluate(test_data)
 
 ```
 
-
+    12/12 [==============================] - 8s 469ms/step - loss: 0.6272 - accuracy: 0.9019
     
-![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_5_0.png)
-    
-
-
-
-    <Figure size 640x480 with 0 Axes>
-
 
 
 ```python
+model.export(export_dir='.')
 
 ```
+
+    2023-06-07 03:45:50.935762: W tensorflow/python/util/util.cc:368] Sets are not currently considered sequences, but this may change in the future, so consider avoiding using them.
+    
+
+    INFO:tensorflow:Assets written to: /tmp/tmp8op0oxei/assets
+    
+
+    INFO:tensorflow:Assets written to: /tmp/tmp8op0oxei/assets
+    2023-06-07 03:45:55.526983: I tensorflow/core/grappler/devices.cc:66] Number of eligible GPUs (core count >= 8, compute capability >= 0.0): 0
+    2023-06-07 03:45:55.527141: I tensorflow/core/grappler/clusters/single_machine.cc:358] Starting new session
+    2023-06-07 03:45:55.576969: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:1164] Optimization results for grappler item: graph_to_optimize
+      function_optimizer: Graph size after: 913 nodes (656), 923 edges (664), time = 23.136ms.
+      function_optimizer: function_optimizer did nothing. time = 0.01ms.
+    
+    /opt/conda/envs/tf/lib/python3.8/site-packages/tensorflow/lite/python/convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+      warnings.warn("Statistics for quantized inputs were expected, but not "
+    2023-06-07 03:45:56.749216: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:357] Ignored output_format.
+    2023-06-07 03:45:56.749273: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:360] Ignored drop_control_dependency.
+    
+
+    INFO:tensorflow:Label file is inside the TFLite model with metadata.
+    
+
+    fully_quantize: 0, inference_type: 6, input_inference_type: 3, output_inference_type: 3
+    INFO:tensorflow:Label file is inside the TFLite model with metadata.
+    
+
+    INFO:tensorflow:Saving labels in /tmp/tmpvwlfdplm/labels.txt
+    
+
+    INFO:tensorflow:Saving labels in /tmp/tmpvwlfdplm/labels.txt
+    
+
+    INFO:tensorflow:TensorFlow Lite model exported successfully: ./model.tflite
+    
+
+    INFO:tensorflow:TensorFlow Lite model exported successfully: ./model.tflite
+    
