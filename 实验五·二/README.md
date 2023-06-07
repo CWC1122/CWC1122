@@ -169,7 +169,7 @@ for i, img_path in enumerate(next_rock+next_paper+next_scissors):
 
 
     
-![png](output_3_0.png)
+![png](https://github.com/CWC1122/CWC1122/blob/main/%E5%AE%9E%E9%AA%8C%E4%BA%94%C2%B7%E4%BA%8C/images/output_3_0.png)
     
 
 
